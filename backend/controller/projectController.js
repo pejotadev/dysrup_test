@@ -11,8 +11,7 @@ exports.createTable = async function(req, res, next) {
 
 exports.createProject = async function(req, res, next) {
     try {
-      console.log(req.body);
-        const project = await Project.create(req.body);
+        const project = await Project.create({ ...req.body, userId: req.user.id });
         res.send(project);
     } catch (err) {
         next(err);
@@ -21,7 +20,7 @@ exports.createProject = async function(req, res, next) {
 
 exports.show = async function(req, res, next) {
     try {
-        const projects = await Project.findAll();
+        const projects = await Project.findAll({ where: { userId: req.user.id } });
         if (!projects) throw new Error('No projects found');
         res.status(200).json(projects);
     } catch (err) {
@@ -31,7 +30,7 @@ exports.show = async function(req, res, next) {
 
 exports.findById = async function(req, res, next) {
     try {
-        const project = await Project.findOne({ where: { id: req.params.id } });
+        const project = await Project.findOne({ where: { id: req.params.id, userId: req.user.id } });
         if (!project) throw new Error('Project not found');
         res.status(200).json(project);
     } catch (err) {
@@ -41,7 +40,7 @@ exports.findById = async function(req, res, next) {
 
 exports.update = async function(req, res, next) {
     try {
-        const project = await Project.update(req.body, { where: { id: req.params.id } });
+        const project = await Project.update(req.body, { where: { id: req.params.id, userId: req.user.id } });
         if (!project) throw new Error('Project not found');
         res.status(200).json("Project updated");
     } catch (err) {
@@ -51,7 +50,7 @@ exports.update = async function(req, res, next) {
 
 exports.delete = async function(req, res, next) {
     try {
-        await Project.destroy({ where: { id: req.params.id } });
+        await Project.destroy({ where: { id: req.params.id, userId: req.user.id } });
         res.status(200).json("Project deleted");
     } catch (err) {
         next(err);

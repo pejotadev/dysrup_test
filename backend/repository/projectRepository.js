@@ -2,24 +2,24 @@ const Project = require('../models/project');
 
 class ProjectRepository {
 
-  getAll() {
-    return Project.findAll();
+  getAll(userId) {
+    return Project.findAll({ where: { userId: userId } });
   }
 
-  getById(id) {
-    return Project.findByPk(id);
+  getById(id, userId) {
+    return Project.findByPk(id, { where: { userId: userId } });
   }
 
-  create(project) {
-    return Project.create(project);
+  create(project, userId) {
+    return Project.create({ ...project, userId: userId });
   }
 
-  update(id, project) {
-    return Project.update(project, { where: { id: id } });
+  update(id, project, userId) {
+    return Project.update(project, { where: { id: id, userId: userId } });
   }
 
-  delete(id) {
-    return Project.destroy({ where: { id: id } });
+  delete(id, userId) {
+    return Project.destroy({ where: { id: id, userId: userId } });
   }
 }
 

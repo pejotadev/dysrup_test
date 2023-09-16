@@ -17,7 +17,7 @@ const Project = sequelize.define('project', {
     allowNull: false
     },
   status: {
-    type: Enumerator('active', 'inactive', 'completed'),
+    type: Sequelize.ENUM('active', 'inactive', 'completed'),
     allowNull: false
   },
   initial_date: {
@@ -31,6 +31,13 @@ const Project = sequelize.define('project', {
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: Sequelize.NOW
+  },
+  userId: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: 'users',
+      key: 'id'
+    }
   }
 });
 
