@@ -12,6 +12,22 @@ const Project = sequelize.define('project', {
     type: Sequelize.STRING,
     allowNull: false
   },
+  description: {
+    type: Sequelize.STRING,
+    allowNull: false
+    },
+  status: {
+    type: Enumerator('active', 'inactive', 'completed'),
+    allowNull: false
+  },
+  initial_date: {
+    type: Sequelize.DATE,
+    allowNull: false
+  },
+  final_date: {
+    type: Sequelize.DATE,
+    allowNull: false
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: Sequelize.NOW

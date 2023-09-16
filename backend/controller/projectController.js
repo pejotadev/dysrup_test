@@ -1,41 +1,59 @@
 const Project = require('../models/project');
 
-exports.createTable = async function(req, res) {
-    await Project.sync();
-    res.send("Table created");
+exports.createTable = async function(req, res, next) {
+    try {
+        await Project.sync();
+        res.send("Table created");
+    } catch (err) {
+        next(err);
+    }
 }
 
-exports.getProjects = async function(req, res) {
-  const projects = await Project.findAll();
-  res.send(projects);
+exports.createProject = async function(req, res, next) {
+    try {
+      console.log(req.body);
+        const project = await Project.create(req.body);
+        res.send(project);
+    } catch (err) {
+        next(err);
+    }
 }
 
-exports.getProjectWithTasks = async function(req, res) {
-  const project = await Project.findOne({ where: { id: req.params.id }, include: ['tasks'] });
-  res.send(project);
+exports.show = async function(req, res, next) {
+    try {
+        const projects = await Project.findAll();
+        if (!projects) throw new Error('No projects found');
+        res.status(200).json(projects);
+    } catch (err) {
+        next(err);
+    }
 }
 
-exports.getProject = async function(req, res) {
-  const project = await Project.findOne({ where: { id: req.params.id } });
-  res.send(project);
+exports.findById = async function(req, res, next) {
+    try {
+        const project = await Project.findOne({ where: { id: req.params.id } });
+        if (!project) throw new Error('Project not found');
+        res.status(200).json(project);
+    } catch (err) {
+        next(err);
+    }
 }
 
-exports.updateProject = async function(req, res) {
-  await Project.update(req.body, { where: { id: req.params.id } });
-  res.send("Project updated");
+exports.update = async function(req, res, next) {
+    try {
+        const project = await Project.update(req.body, { where: { id: req.params.id } });
+        if (!project) throw new Error('Project not found');
+        res.status(200).json("Project updated");
+    } catch (err) {
+        next(err);
+    }
 }
 
-exports.deleteProject = async function(req, res) {
-  await Project.destroy({ where: { id: req.params.id } });
-  res.send("Project deleted");
-}
-
-exports.createProject = async function(req, res) {
-  const project = await Project.create(req.body);
-  res.send(project);
-}
-
-exports.findById = async function (req, res) {
-  const project = await Project.findOne({ where: { id: req.params.id } });
-  res.send(project);
+exports.delete = async function(req, res, next) {
+    try {
+        await Project.destroy({ where: { id: req.params.id } });
+        res.status(200).json("Project deleted");
+    } catch (err) {
+        next(err);
+    }
 }

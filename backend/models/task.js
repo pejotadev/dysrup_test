@@ -19,6 +19,14 @@ const Task = sequelize.define('task', {
       key: 'id'
     }
   },
+  status: {
+    type: Enumerator('active', 'inactive', 'completed'),
+    allowNull: false
+  },
+  final_date: {
+    type: Sequelize.DATE,
+    allowNull: true
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: Sequelize.NOW
