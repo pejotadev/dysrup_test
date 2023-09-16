@@ -20,7 +20,7 @@ const Task = sequelize.define('task', {
     }
   },
   status: {
-    type: Enumerator('active', 'inactive', 'completed'),
+    type: Sequelize.ENUM('active', 'inactive', 'completed'),
     allowNull: false
   },
   final_date: {
