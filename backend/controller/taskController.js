@@ -1,81 +1,36 @@
-const db = require('../db/database');
+const Task = require('../models/task');
 
-// Create a new database
-exports.createDB = function(req, res) {
-    let sql = "CREATE DATABASE dysruptest";
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send("Database created");
-    });
+exports.createTable = async function(req, res) {
+    await Task.sync();
+    res.send("Table created");
 }
 
-exports.createTable = function(req, res) {
-    let sql = `CREATE TABLE tasks (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        description TEXT,
-        project_id INT,
-        FOREIGN KEY (project_id) REFERENCES projects(id)
-    );`;
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send("Table created");
-    });
+exports.createTask = async function(req, res) {
+    const task = await Task.create(req.body);
+    res.send(task);
 }
 
-exports.createTask = function(req, res) {
-    let sql = "INSERT INTO task (name, description, project_id) VALUES (?,?,?)";
-    db.query(sql, [req.body.name, req.body.description, req.body.project_id], (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send("Task created");
-    });
+exports.show = async function(req, res) {
+    const tasks = await Task.findAll();
+    res.status(200).json(tasks);
 }
 
-exports.show = function(req, res) {
-    let sql = "SELECT * FROM task";
-    db.query(sql, (err, result) => {
-        if (err) throw res.json(err);
-        
-        return res.status(200).json(result);
-    });
+exports.showProjectTasks = async function(req, res) {
+    const tasks = await Task.findAll({ where: { projectId: req.params.id } });
+    res.status(200).json(tasks);
 }
 
-exports.showProjectTasks = function(req, res) {
-    let sql = "SELECT * FROM task WHERE project_id =?";
-    db.query(sql, [req.params.id], (err, result) => {
-        if (err) throw res.json(err);
-        
-        return res.status(200).json(result);
-    });
+exports.findById = async function(req, res) {
+    const task = await Task.findOne({ where: { id: req.params.id } });
+    res.status(200).json(task);
 }
 
-exports.findById = function(req, res) {
-    let sql = "SELECT * FROM task WHERE id =?";
-    db.query(sql, [req.params.id], (err, result) => {
-        if (err) throw res.json(err);
-        
-        return res.status(200).json(result);
-    });
+exports.update = async function(req, res) {
+    await Task.update(req.body, { where: { id: req.params.id } });
+    res.status(200).json("Task updated");
 }
 
-exports.update = function(req, res) {
-    let sql = "UPDATE task SET description =? WHERE id =?";
-    db.query(sql, [req.body.description, req.params.id], (err, result) => {
-        if (err) throw res.json(err);
-        
-        return res.status(200).json(result);
-    });
+exports.delete = async function(req, res) {
+    await Task.destroy({ where: { id: req.params.id } });
+    res.status(200).json("Task deleted");
 }
-
-exports.delete = function(req, res) {
-    let sql = "DELETE FROM task WHERE id =?";
-    db.query(sql, [req.params.id], (err, result) => {
-        if (err) throw res.json(err);
-        
-        return res.status(200).json(result);
-    });
-}
-

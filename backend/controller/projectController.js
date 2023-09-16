@@ -1,77 +1,41 @@
-const db = require('../db/database');
+const Project = require('../models/project');
 
-exports.createTable = function(req, res) {
-    let sql = `CREATE TABLE projects (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      description TEXT,
-      start_date DATE
-  );`;
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send("Table created");
-    });
+exports.createTable = async function(req, res) {
+    await Project.sync();
+    res.send("Table created");
 }
 
-exports.getProjects = function(req, res) {
-  let sql = `SELECT * FROM projects`;
-  db.query(sql, (err, result) => {
-    if (err) throw err;
-    res.send(result);
-  });
+exports.getProjects = async function(req, res) {
+  const projects = await Project.findAll();
+  res.send(projects);
 }
 
-exports.getProjectWithTasks = function(req, res) {
-  let sql = `SELECT * FROM projects
-  LEFT JOIN tasks ON projects.id = tasks.project_id
-  WHERE projects.id = ?`;
-  db.query(sql, [req.params.id], (err, result) => {
-    if (err) throw err;
-    res.send(result);
-  });
+exports.getProjectWithTasks = async function(req, res) {
+  const project = await Project.findOne({ where: { id: req.params.id }, include: ['tasks'] });
+  res.send(project);
 }
 
-exports.getProject = function(req, res) {
-  let sql = `SELECT * FROM projects WHERE id = ?`;
-  db.query(sql, [req.params.id], (err, result) => {
-    if (err) throw err;
-    res.send(result);
-  });
+exports.getProject = async function(req, res) {
+  const project = await Project.findOne({ where: { id: req.params.id } });
+  res.send(project);
 }
 
-exports.updateProject = function(req, res) {
-  let sql = `UPDATE projects SET name =?, description =?, start_date =? WHERE id =?`;
-  db.query(sql, [req.body.name, req.body.description, req.body.start_date, req.params.id], (err, result) => {
-    if (err) throw err;
-    res.send(result);
-  });
+exports.updateProject = async function(req, res) {
+  await Project.update(req.body, { where: { id: req.params.id } });
+  res.send("Project updated");
 }
 
-
-exports.deleteProject = function(req, res) {
-  let sql = `DELETE FROM projects WHERE id =?`;
-  db.query(sql, [req.params.id], (err, result) => {
-    if (err) throw err;
-    res.send(result);
-  });
+exports.deleteProject = async function(req, res) {
+  await Project.destroy({ where: { id: req.params.id } });
+  res.send("Project deleted");
 }
 
-exports.createProject = function(req, res) {
-  let sql = `INSERT INTO projects (name, description, start_date) VALUES (?,?,?)`;
-  db.query(sql, [req.body.name, req.body.description, req.body.start_date], (err, result) => {
-    if (err) throw err;
-    res.send(result);
-  });
+exports.createProject = async function(req, res) {
+  const project = await Project.create(req.body);
+  res.send(project);
 }
 
-exports.findById = function (req, res) {
-  let sql = `SELECT * FROM projects WHERE id =?`;
-  db.query(sql, [req.params.id], (err, result) => {
-    if (err) throw err;
-    res.send(result);
-  });
+exports.findById = async function (req, res) {
+  const project = await Project.findOne({ where: { id: req.params.id } });
+  res.send(project);
 }
-
-
-
