@@ -21,7 +21,8 @@ const Task = sequelize.define('task', {
   },
   status: {
     type: Sequelize.ENUM('active', 'inactive', 'completed'),
-    allowNull: false
+    allowNull: false,
+    defaultValue: 'active'
   },
   final_date: {
     type: Sequelize.DATE,

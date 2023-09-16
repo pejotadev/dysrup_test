@@ -1,5 +1,7 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../db/database');
+const User = require('./user');
+const Task = require('./task');
 
 const Project = sequelize.define('project', {
   id: {
@@ -14,11 +16,12 @@ const Project = sequelize.define('project', {
   },
   description: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: true
     },
   status: {
     type: Sequelize.ENUM('active', 'inactive', 'completed'),
-    allowNull: false
+    allowNull: false,
+    defaultValue: 'active'
   },
   initial_date: {
     type: Sequelize.DATE,
@@ -26,7 +29,7 @@ const Project = sequelize.define('project', {
   },
   final_date: {
     type: Sequelize.DATE,
-    allowNull: false
+    allowNull: true
   },
   createdAt: {
     type: Sequelize.DATE,
@@ -40,5 +43,8 @@ const Project = sequelize.define('project', {
     }
   }
 });
+
+Project.belongsTo(User);
+Project.hasMany(Task);
 
 module.exports = Project;

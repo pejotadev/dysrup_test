@@ -1,4 +1,7 @@
 const Project = require('../models/project');
+const User = require('../models/user');
+const Task = require('../models/task');
+const jwt = require('jsonwebtoken');
 
 exports.createTable = async function(req, res, next) {
     try {
@@ -11,16 +14,26 @@ exports.createTable = async function(req, res, next) {
 
 exports.createProject = async function(req, res, next) {
     try {
-        const project = await Project.create({ ...req.body, userId: req.user.id });
-        res.send(project);
+        const token = req.headers.authorization;
+        const tokenWithoutBearer = token.replace('Bearer ', '');
+        const decodedToken = jwt.decode(tokenWithoutBearer);
+        const project = await Project.create({ ...req.body, userId: decodedToken.userId });
+       res.send(project);
     } catch (err) {
+        console.log(req.user.id);
+        console.log(req.body);
         next(err);
     }
 }
 
 exports.show = async function(req, res, next) {
     try {
-        const projects = await Project.findAll({ where: { userId: req.user.id } });
+        const projects = await Project.findAll({
+            include: [{
+                model: User,
+                attributes: ['name']
+            }]
+        });
         if (!projects) throw new Error('No projects found');
         res.status(200).json(projects);
     } catch (err) {
@@ -30,7 +43,17 @@ exports.show = async function(req, res, next) {
 
 exports.findById = async function(req, res, next) {
     try {
-        const project = await Project.findOne({ where: { id: req.params.id, userId: req.user.id } });
+        
+        const project = await Project.findOne({
+            where: { id: req.params.id },
+            include: [{
+                model: User,
+                attributes: ['name']
+            },
+            {
+                model: Task
+            }]});
+
         if (!project) throw new Error('Project not found');
         res.status(200).json(project);
     } catch (err) {
@@ -40,9 +63,9 @@ exports.findById = async function(req, res, next) {
 
 exports.update = async function(req, res, next) {
     try {
-        const project = await Project.update(req.body, { where: { id: req.params.id, userId: req.user.id } });
+        const project = await Project.update(req.body, { where: { id: req.params.id } });
         if (!project) throw new Error('Project not found');
-        res.status(200).json("Project updated");
+        res.status(200).json(await Project.findOne({ where: { id: req.params.id }}));
     } catch (err) {
         next(err);
     }
@@ -50,7 +73,7 @@ exports.update = async function(req, res, next) {
 
 exports.delete = async function(req, res, next) {
     try {
-        await Project.destroy({ where: { id: req.params.id, userId: req.user.id } });
+        await Project.destroy({ where: { id: req.params.id } });
         res.status(200).json("Project deleted");
     } catch (err) {
         next(err);

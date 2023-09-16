@@ -48,7 +48,7 @@ exports.findById = async function(req, res, next) {
 exports.update = async function(req, res, next) {
     try {
         await Task.update(req.body, { where: { id: req.params.id } });
-        res.status(200).json("Task updated");
+        res.status(200).json(await Task.findOne({ where: { id: req.params.id } }));
     } catch (err) {
         next(err);
     }

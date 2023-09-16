@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../db/database');
+const Project = require('./project');
 
 const User = sequelize.define('user', {
     id: {
@@ -18,10 +19,6 @@ const User = sequelize.define('user', {
     },
     password: {
         type: Sequelize.STRING,
-        allowNull: false
-    },
-    level: {
-        type: Sequelize.INTEGER,
         allowNull: false
     },
     createdAt: {
