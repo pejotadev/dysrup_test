@@ -60,7 +60,7 @@ export default function Projects() {
                   name="name" 
                   onChange={e => setItemsProject({...newProject, name: e.target.value})} />
                 <button 
-                  className="flex-no-shrink p-2 border-2 rounded text-teal border-teal hover:text-white hover:bg-teal" 
+                  className="flex-no-shrink p-2 border-2 rounded text-teal border-teal hover:text-black hover:bg-teal" 
                   onClick={addHandler}>
                     {loading ?
                     <div role="status">
@@ -117,11 +117,11 @@ export default function Projects() {
               <td className="px-6 py-4 flex mb-4 item" dir="rtl">
                 <Link 
                   to={`/tasks/?id=${project.id}`}
-                  className="flex-no-shrink p-2 ml-2 border-2 rounded text-red border-red hover:text-white hover:bg-red"> 
+                  className="flex-no-shrink p-2 ml-2 border-2 rounded text-red border-red hover:text-black hover:bg-red"> 
                   Open
                 </Link>
                 <button 
-                  className="flex-no-shrink p-2 ml-2 border-2 rounded text-red border-red hover:text-white hover:bg-red" id={project.id} onClick={() => deleteHandler(project.id)}>
+                  className="flex-no-shrink p-2 ml-2 border-2 rounded text-red border-red hover:text-black hover:bg-red" id={project.id} onClick={() => deleteHandler(project.id)}>
                   Remove
                 </button>
               </td>

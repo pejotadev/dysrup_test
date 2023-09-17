@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../Header';
 import api from '../../http/axios';
+const moment = require('moment');
 
 export default function Tasks() {
 
@@ -16,6 +17,7 @@ export default function Tasks() {
         api.getProjectTasks(id, (response) => {
           setTasks(response.data.tasks)
           delete response.data.tasks
+          response.data.initial_date = moment(response.data.initial_date).format('DD/MM/YYYY');
           setProject(response.data)
         });
     } catch (error) {
@@ -26,7 +28,7 @@ export default function Tasks() {
   const addHandler = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
-    const task = {projectId: id, name: newTask.name}
+    const task = {projectId: id, name: newTask.name, final_date: newTask.final_date}
     
     try {
       const response =  
@@ -73,9 +75,14 @@ export default function Tasks() {
 <div className="h-100 w-full flex items-center justify-center bg-teal-lightest font-sans">
 	<div className="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4 lg:max-w-lg">
         <div className="mb-4">
-            <h1 className="text-grey-darkest">{project.name}</h1>
-            <h1 className="text-grey-darkest">{project.description}</h1>
-            <span>Start: {project.initial_date}</span>
+            <p className="text-sm text-gray-600 flex items-center">
+              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+              </svg> 
+              {project.initial_date}
+            </p>
+            <div className="text-gray-900 font-bold text-xl mb-2">{project.name}</div>
+            <p className="text-gray-700 text-base">{project.description}</p>
             <div className="flex mt-4">
                 <input 
                   className="shadow appearance-none border rounded w-full py-2 px-3 mr-4 text-grey-darker" 
@@ -89,7 +96,7 @@ export default function Tasks() {
                     onChange={e => setNewTask({...newTask, final_date: e.target.value})}
                     />
                 <button 
-                  className="flex-no-shrink p-2 border-2 rounded text-teal border-teal hover:text-white hover:bg-teal" 
+                  className="flex-no-shrink p-2 border-2 rounded text-teal border-teal hover:text-black hover:bg-teal" 
                   onClick={addHandler} >
                     Add
                 </button>
@@ -98,17 +105,19 @@ export default function Tasks() {
         <div>
           {tasks && tasks.map((task, index) => {
             const lineThrough = task.status == 'completed' ? 'line-through' : ''
+            const taskDate = moment(task.final_date).format('DD/MM/YYYY');
             return (
               <div className="flex mb-4 items-center" key={index}>
                 <span className="w-full text-grey-darkest">
-                  <p className={`${lineThrough}`}>{task.name}</p> 
+                  <p className={`${lineThrough}`}>{task.name}</p>
+                  <span className={`text-gray-300 ${lineThrough}`}>{taskDate}</span> 
                 </span>
                 <button 
-                  className="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-white text-green border-green hover:bg-green" 
+                  className="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-black text-green border-green hover:bg-green" 
                   onClick={() => statusTaskHandler(task)}>
                   {task.status === 'completed' ? 'Undone' : 'Done'}
                 </button>
-                <button className="flex-no-shrink p-2 ml-2 border-2 rounded text-red border-red hover:text-white hover:bg-red" onClick={() => deleteTask(task.id)}>Remove</button>
+                <button className="flex-no-shrink p-2 ml-2 border-2 rounded text-red border-red hover:text-black hover:bg-red" onClick={() => deleteTask(task.id)}>Remove</button>
               </div>)
           })}
         </div>
