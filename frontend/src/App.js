@@ -7,7 +7,7 @@ import Login from './components/Login/Login';
 
 function setToken(userToken) {
   sessionStorage.setItem('token', JSON.stringify(userToken));
-  
+  window.location.href = '/dashboard';  
 }
 
 function getToken() {
@@ -28,6 +28,7 @@ const App = () => {
     <div className="wrapper">
       <Router>
         <Routes>
+          <Route path="/" element={<Dashboard />}></Route>
           <Route path="/dashboard" element={<Dashboard />}></Route>
           <Route path="/tasks" element={<Tasks />}></Route>
         </Routes>

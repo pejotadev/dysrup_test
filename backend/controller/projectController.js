@@ -74,7 +74,12 @@ exports.update = async function(req, res, next) {
 exports.delete = async function(req, res, next) {
     try {
         await Project.destroy({ where: { id: req.params.id } });
-        res.status(200).json("Project deleted");
+        res.status(200).json(await Project.findAll({
+            include: [{
+                model: User,
+                attributes: ['name']
+            }]
+        }));
     } catch (err) {
         next(err);
     }
